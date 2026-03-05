@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
      */
     start({ maxCount }) {
       // Reset count and clear any existing interval before starting fresh
-      this._currentCount = 1;
+      this._currentCount = maxCount;
       this._setTimerDisplay();
 
       if (this._interval !== null) {
@@ -21,17 +21,10 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       this._interval = setInterval(() => {
-        this._currentCount++;
+        this._currentCount--;
 
-        if (this._currentCount > maxCount) {
+        if (this._currentCount <= 0) {
           this.stop();
-        }
-
-        const warning = maxCount - maxCount * 0.16;
-        const isWarning = this._currentCount >= warning;
-
-        if (isWarning && !this._timer.classList.contains("warn")) {
-          this._timer.classList.add("warn");
         }
 
         this._setTimerDisplay();
@@ -42,7 +35,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (this._interval !== null) {
         clearInterval(this._interval);
         this._interval = null;
-        this._currentCount = 1;
+        this._currentCount = 0;
         this._timer.classList.remove("warn");
       }
     }
@@ -52,9 +45,12 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  /**
+   * @typedef {'red' | 'yellow' | 'green'} TrafficLightColor
+   */
   class Light {
     /**
-     * @param {string} color
+     * @param {TrafficLightColor} color
      */
     constructor(color) {
       this.color = color;
@@ -62,10 +58,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     /**
-     * @param {string} currentColor
+     * @param {TrafficLightColor} currentColor
      */
-    notify(currenColor) {
-      if (currenColor === this.color) {
+    notify(currentColor) {
+      if (currentColor === this.color) {
         this._turnOn();
       } else {
         this._turnOff();
@@ -82,7 +78,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   class TrafficLight {
-    _currentOnIndex = -1;
     _listeners = [new Light("red"), new Light("yellow"), new Light("green")];
 
     /**
@@ -95,20 +90,24 @@ document.addEventListener("DOMContentLoaded", () => {
 
     async run() {
       const timer = new Timer();
+      let currentOnIndex = -1;
+      let step = 1;
       while (true) {
         const listenersLength = this._listeners.length;
-        const nextIndex = this._currentOnIndex + 1;
-        this._currentOnIndex = nextIndex > listenersLength - 1 ? 0 : nextIndex;
-        const colors = this._listeners.map((listener) => listener.color);
+        const nextPointer = currentOnIndex + step;
+        step = nextPointer >= listenersLength ? -1 : nextPointer < 0 ? 1 : step;
 
-        const currentColor = colors[this._currentOnIndex];
+        currentOnIndex += step;
+        const colors = this._listeners.map((listener) => listener.color);
+        const currentColor = colors[currentOnIndex];
+
         this._listeners.forEach((listener) => listener.notify(currentColor));
 
         // Start timer AFTER switching the light, so count is in sync with current light
 
         const sleepInMS =
           currentColor === "yellow"
-            ? Math.round(this._timeInterval * 0.1) * 1000
+            ? Math.max(this._timeInterval - (this._timeInterval - 6), 6) * 1000
             : this._timeInterval * 1000;
 
         timer.start({ maxCount: sleepInMS / 1000 });
@@ -124,6 +123,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  const trafficLight = new TrafficLight();
+  const trafficLight = new TrafficLight({ timeInterval: 15 });
   trafficLight.run();
 });

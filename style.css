@@ -36,7 +36,7 @@ main {
 }
 
 .red {
-  background-color: #500;
+  background-color: #300;
 }
 
 .red.on {
@@ -44,7 +44,7 @@ main {
 }
 
 .yellow {
-  background-color: #550;
+  background-color: #330;
 }
 
 .yellow.on {
@@ -52,7 +52,7 @@ main {
 }
 
 .green {
-  background-color: #050;
+  background-color: #030;
 }
 
 .green.on {
@@ -72,8 +72,4 @@ main {
   font-weight: 700;
   color: #0f0;
   font-size: 4rem;
-}
-
-#timer.warn {
-  color: #f00;
 }
