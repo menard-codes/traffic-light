@@ -124,6 +124,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  const trafficLight = new TrafficLight({ timeInterval: 15 });
+  const trafficLight = new TrafficLight();
   trafficLight.run();
 });
