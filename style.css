@@ -1,0 +1,79 @@
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+main {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+}
+
+.traffic-light {
+  display: grid;
+  gap: 1rem;
+}
+
+.traffic-light .box {
+  width: 8rem;
+  height: 20rem;
+  background-color: #1d1e22;
+  border-radius: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  justify-content: center;
+  align-items: center;
+}
+
+.light {
+  width: 5rem;
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+}
+
+.red {
+  background-color: #500;
+}
+
+.red.on {
+  background-color: #f00;
+}
+
+.yellow {
+  background-color: #550;
+}
+
+.yellow.on {
+  background-color: #ff0;
+}
+
+.green {
+  background-color: #050;
+}
+
+.green.on {
+  background-color: #0f0;
+}
+
+.timer-box {
+  background-color: #555;
+  border: 5px solid #333;
+  border-radius: 1rem;
+  padding: 0.5rem 1rem;
+  text-align: center;
+}
+
+#timer {
+  font-family: "Courier New", Courier, monospace;
+  font-weight: 700;
+  color: #0f0;
+  font-size: 4rem;
+}
+
+#timer.warn {
+  color: #f00;
+}
