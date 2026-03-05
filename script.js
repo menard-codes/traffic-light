@@ -9,12 +9,12 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     /**
-     * @param {{ maxCount: number }}
+     * @param {{ maxCount: number; currentColor: TrafficLightColor }}
      */
-    start({ maxCount }) {
+    start({ maxCount, currentColor }) {
       // Reset count and clear any existing interval before starting fresh
       this._currentCount = maxCount;
-      this._setTimerDisplay();
+      this._setTimerDisplay({ currentColor });
 
       if (this._interval !== null) {
         clearInterval(this._interval);
@@ -27,7 +27,7 @@ document.addEventListener("DOMContentLoaded", () => {
           this.stop();
         }
 
-        this._setTimerDisplay();
+        this._setTimerDisplay({ currentColor });
       }, 1000);
     }
 
@@ -40,8 +40,31 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-    _setTimerDisplay() {
+    /**
+     * @param {{ currentColor: TrafficLightColor }} param0
+     */
+    _setTimerDisplay({ currentColor }) {
       this._timer.textContent = String(this._currentCount).padStart(2, "0");
+      switch (currentColor) {
+        case "green": {
+          this._timer.classList.add("go");
+          this._timer.classList.remove("wait");
+          this._timer.classList.remove("stop");
+          break;
+        }
+        case "red": {
+          this._timer.classList.add("stop");
+          this._timer.classList.remove("wait");
+          this._timer.classList.remove("go");
+          break;
+        }
+        case "yellow": {
+          this._timer.classList.add("wait");
+          this._timer.classList.remove("go");
+          this._timer.classList.remove("stop");
+          break;
+        }
+      }
     }
   }
 
@@ -90,16 +113,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
     async run() {
       const timer = new Timer();
-      let currentOnIndex = -1;
-      let step = 1;
+      const listenersLength = this._listeners.length;
+      let currentPointer = listenersLength;
       while (true) {
-        const listenersLength = this._listeners.length;
-        const nextPointer = currentOnIndex + step;
-        step = nextPointer >= listenersLength ? -1 : nextPointer < 0 ? 1 : step;
-
-        currentOnIndex += step;
+        const nextPointer = currentPointer - 1;
+        currentPointer = nextPointer < 0 ? listenersLength - 1 : nextPointer;
         const colors = this._listeners.map((listener) => listener.color);
-        const currentColor = colors[currentOnIndex];
+        const currentColor = colors[currentPointer];
 
         this._listeners.forEach((listener) => listener.notify(currentColor));
 
@@ -110,7 +130,7 @@ document.addEventListener("DOMContentLoaded", () => {
             ? Math.max(this._timeInterval - (this._timeInterval - 6), 6) * 1000
             : this._timeInterval * 1000;
 
-        timer.start({ maxCount: sleepInMS / 1000 });
+        timer.start({ maxCount: sleepInMS / 1000, currentColor });
 
         await this._sleep(sleepInMS);
 

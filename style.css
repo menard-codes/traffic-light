@@ -70,6 +70,17 @@ main {
 #timer {
   font-family: "Courier New", Courier, monospace;
   font-weight: 700;
-  color: #0f0;
   font-size: 4rem;
+}
+
+#timer.go {
+  color: #0f0;
+}
+
+#timer.wait {
+  color: #ff0;
+}
+
+#timer.stop {
+  color: #f00;
 }
